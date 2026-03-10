@@ -5,3 +5,4 @@ tensorflow
 scikit-learn
 werkzeug
 gunicorn
+tesnorflow==2.13.0
