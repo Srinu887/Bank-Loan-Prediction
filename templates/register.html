@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Register</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #198754, #0dcaf0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 500px;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.18);
+        }
+        .required-star {
+            color: red;
+            font-weight: 700;
+        }
+        .form-text {
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="card auth-card p-4">
+        <div class="card-body">
+            <h2 class="text-center mb-4 fw-bold text-success">Create Account</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" novalidate id="registerForm">
+                <div class="mb-3">
+                    <label for="name" class="form-label fw-semibold">
+                        Full Name <span class="required-star">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        class="form-control {% if errors.get('name') %}is-invalid{% endif %}"
+                        id="name"
+                        name="name"
+                        value="{{ form.get('name', '') }}"
+                        placeholder="Enter your full name"
+                        required
+                    >
+                    <div class="form-text">Minimum 2 characters</div>
+                    <div class="invalid-feedback" id="nameError">
+                        {{ errors.get('name', '') }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label fw-semibold">
+                        Email <span class="required-star">*</span>
+                    </label>
+                    <input
+                        type="email"
+                        class="form-control {% if errors.get('email') %}is-invalid{% endif %}"
+                        id="email"
+                        name="email"
+                        value="{{ form.get('email', '') }}"
+                        placeholder="Enter your email"
+                        required
+                    >
+                    <div class="form-text">Enter a valid email address</div>
+                    <div class="invalid-feedback" id="emailError">
+                        {{ errors.get('email', '') }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label fw-semibold">
+                        Password <span class="required-star">*</span>
+                    </label>
+                    <input
+                        type="password"
+                        class="form-control {% if errors.get('password') %}is-invalid{% endif %}"
+                        id="password"
+                        name="password"
+                        placeholder="Enter password"
+                        required
+                    >
+                    <div class="form-text">Range: minimum 6 characters</div>
+                    <div class="invalid-feedback" id="passwordError">
+                        {{ errors.get('password', '') }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="confirm" class="form-label fw-semibold">
+                        Confirm Password <span class="required-star">*</span>
+                    </label>
+                    <input
+                        type="password"
+                        class="form-control {% if errors.get('confirm') %}is-invalid{% endif %}"
+                        id="confirm"
+                        name="confirm"
+                        placeholder="Confirm password"
+                        required
+                    >
+                    <div class="form-text">Must match password</div>
+                    <div class="invalid-feedback" id="confirmError">
+                        {{ errors.get('confirm', '') }}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 py-2 fw-semibold">Register</button>
+            </form>
+
+            <p class="text-center mt-3 mb-0">
+                Already have an account?
+                <a href="{{ url_for('login') }}" class="fw-semibold text-decoration-none">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function setInvalid(input, message) {
+            input.classList.add("is-invalid");
+            input.classList.remove("is-valid");
+            const errorEl = document.getElementById(input.id + "Error");
+            if (errorEl) errorEl.textContent = message;
+        }
+
+        function setValid(input) {
+            input.classList.remove("is-invalid");
+            if (input.value.trim() !== "") {
+                input.classList.add("is-valid");
+            } else {
+                input.classList.remove("is-valid");
+            }
+        }
+
+        function validateName() {
+            const input = document.getElementById("name");
+            const value = input.value.trim();
+
+            if (!value) {
+                setInvalid(input, "Name is required.");
+                return false;
+            }
+            if (value.length < 2) {
+                setInvalid(input, "Name must be at least 2 characters.");
+                return false;
+            }
+            setValid(input);
+            return true;
+        }
+
+        function validateEmail() {
+            const input = document.getElementById("email");
+            const value = input.value.trim();
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!value) {
+                setInvalid(input, "Email is required.");
+                return false;
+            }
+            if (!regex.test(value)) {
+                setInvalid(input, "Enter a valid email address.");
+                return false;
+            }
+            setValid(input);
+            return true;
+        }
+
+        function validatePassword() {
+            const input = document.getElementById("password");
+            const value = input.value.trim();
+
+            if (!value) {
+                setInvalid(input, "Password is required.");
+                return false;
+            }
+            if (value.length < 6) {
+                setInvalid(input, "Password must be at least 6 characters.");
+                return false;
+            }
+            setValid(input);
+            return true;
+        }
+
+        function validateConfirm() {
+            const input = document.getElementById("confirm");
+            const value = input.value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            if (!value) {
+                setInvalid(input, "Confirm password is required.");
+                return false;
+            }
+            if (value !== password) {
+                setInvalid(input, "Passwords do not match.");
+                return false;
+            }
+            setValid(input);
+            return true;
+        }
+
+        document.getElementById("name").addEventListener("input", validateName);
+        document.getElementById("email").addEventListener("input", validateEmail);
+        document.getElementById("password").addEventListener("input", validatePassword);
+        document.getElementById("confirm").addEventListener("input", validateConfirm);
+
+        document.getElementById("name").addEventListener("blur", validateName);
+        document.getElementById("email").addEventListener("blur", validateEmail);
+        document.getElementById("password").addEventListener("blur", validatePassword);
+        document.getElementById("confirm").addEventListener("blur", validateConfirm);
+
+        document.getElementById("registerForm").addEventListener("submit", function(e) {
+            const ok =
+                validateName() &&
+                validateEmail() &&
+                validatePassword() &&
+                validateConfirm();
+
+            if (!ok) {
+                e.preventDefault();
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

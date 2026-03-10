@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Personal Loan Prediction</title>
+</head>
+<body>
+    <h1>Personal Loan Prediction</h1>
+    {% if error %}
+    <p style="color:red;">{{ error }}</p>
+    {% endif %}
+    <form method="post">
+        {% for col in feature_names %}
+            <label>{{ col }}:</label>
+            <input type="number" step="any" name="{{ col }}" required><br><br>
+        {% endfor %}
+        <input type="submit" value="Predict">
+    </form>
+
+    {% if probability %}
+        <h2>Prediction Results:</h2>
+        <p><strong>Probability of Personal Loan:</strong> {{ probability }}</p>
+        <p><strong>Prediction:</strong> {{ prediction }}</p>
+    {% endif %}
+</body>
+</html>
